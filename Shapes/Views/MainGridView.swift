@@ -7,22 +7,20 @@
 
 import SwiftUI
 
-struct ShapesGridView: View {
+struct MainGridView: View {
     
     @StateObject private var viewModel: ShapeViewModel
+    
+    @State private var isShowingEditCirclesView = false
     
     init(shapeService: ShapeService) {
         _viewModel = StateObject(wrappedValue: .init(shapeService: shapeService))
     }
     
-    private let columns = [
-        GridItem(.adaptive(minimum: 100, maximum: 150), spacing: 16),
-    ]
-    
     var body: some View {
         NavigationStack {
             ScrollView {
-                shapesGrid()
+                ShapesGridView(viewModel: viewModel, shapes: viewModel.gridShapes)
                 .padding()
             }
             .toolbar {
@@ -47,19 +45,10 @@ struct ShapesGridView: View {
             .task {
                 try? await viewModel.loadShapes()
             }
-        }
-    }
-    
-    func shapesGrid() -> some View {
-        LazyVGrid(columns: columns, spacing: 16) {
-            ForEach(viewModel.gridShapes) { shape in
-                viewModel.gridImage(for: shape.drawPath)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .foregroundStyle(.blue)
+            .navigationDestination(isPresented: $isShowingEditCirclesView) {
+                EditCirclesView(viewModel: viewModel)
             }
         }
-        .animation(.easeIn, value: viewModel.gridShapes)
     }
     
     func clearAll() {
@@ -67,7 +56,7 @@ struct ShapesGridView: View {
     }
     
     func editCircles() {
-        
+        isShowingEditCirclesView = true
     }
     
     func add(shape: Shape) {
@@ -76,5 +65,5 @@ struct ShapesGridView: View {
 }
 
 #Preview {
-    ShapesGridView(shapeService: LocalShapeService())
+    MainGridView(shapeService: LocalShapeService())
 }

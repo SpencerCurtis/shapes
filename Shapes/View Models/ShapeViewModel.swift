@@ -12,6 +12,10 @@ class ShapeViewModel: ObservableObject {
     @Published var shapeButtons: [Shape] = []
     @Published var gridShapes: [Shape] = []
     
+    var circleGridShapes: [Shape] {
+        gridShapes.filter({ $0.drawPath == .circle })
+    }
+    
     private let shapeService: any ShapeService
     
     init(shapeService: ShapeService) {
@@ -29,6 +33,22 @@ class ShapeViewModel: ObservableObject {
     
     func clearAllGridShapes() {
         gridShapes.removeAll()
+    }
+    
+    func deleteAllCircles() {
+        gridShapes.removeAll(where: { $0.drawPath == .circle })
+    }
+    
+    func appendCircle() {
+        gridShapes.append(.init(drawPath: .circle))
+    }
+    
+    func removeLastCircle() {
+        guard let index = gridShapes.lastIndex(where: { $0.drawPath == .circle }) else {
+            NSLog("No circle to remove")
+            return
+        }
+        gridShapes.remove(at: index)
     }
     
     func gridImage(for drawPath: Shape.DrawPath) -> Image {

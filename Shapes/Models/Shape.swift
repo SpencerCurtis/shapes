@@ -20,13 +20,13 @@ struct Shape: Identifiable, Equatable {
     }
     
     func makeNewCopy() -> Shape {
-        .init(name: name, drawPath: drawPath, id: UUID().uuidString)
+        .init(drawPath: drawPath)
     }
     
-    init(name: String, drawPath: DrawPath = .unknown, id: String? = nil) {
-        self.name = name
+    init(drawPath: DrawPath = .unknown) {
+        self.name = drawPath.rawValue.capitalized
         self.drawPath = drawPath
-        self.id = id
+        self.id = UUID().uuidString
     }
 }
 
